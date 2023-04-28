@@ -1,0 +1,166 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+public class StudentInfo extends JFrame implements ActionListener {
+ private JPanel panel;
+ private JLabel nameLabel, usnLabel, ageLabel, addressLabel, sgpaLabel, categoryLabel;
+ private JTextField nameTextField, usnTextField, ageTextField, addressTextField, sgpaTextField,
+categoryTextField;
+ private JButton computeButton, doneButton, displayButton;
+ private ArrayList<String> studentList = new ArrayList<>();
+ public StudentInfo() {
+ setTitle("Student Information");
+ setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+ setSize(500, 400);
+ panel = new JPanel(new GridBagLayout());
+ GridBagConstraints constraints = new GridBagConstraints();
+ constraints.insets = new Insets(5, 5, 5, 5);
+ nameLabel = new JLabel("Name: ");
+ constraints.gridx = 0;
+ constraints.gridy = 0;
+ panel.add(nameLabel, constraints);
+ nameTextField = new JTextField(20);
+ constraints.gridx = 1;
+ constraints.gridy = 0;
+ panel.add(nameTextField, constraints);
+ usnLabel = new JLabel("USN: ");
+ constraints.gridx = 0;
+ constraints.gridy = 1;
+ panel.add(usnLabel, constraints);
+ usnTextField = new JTextField(20);
+ constraints.gridx = 1;
+ constraints.gridy = 1;
+ panel.add(usnTextField, constraints);
+ ageLabel = new JLabel("Age: ");
+ constraints.gridx = 0;
+ constraints.gridy = 2;
+ panel.add(ageLabel, constraints);
+ ageTextField = new JTextField(20);
+ constraints.gridx = 1;
+ constraints.gridy = 2;
+ panel.add(ageTextField, constraints);
+ addressLabel = new JLabel("Address: ");
+ constraints.gridx = 0;
+ constraints.gridy = 3;
+ panel.add(addressLabel, constraints);
+ addressTextField = new JTextField(20);
+ constraints.gridx = 1;
+ constraints.gridy = 3;
+ panel.add(addressTextField, constraints);
+ sgpaLabel = new JLabel("SGPA: ");
+ constraints.gridx = 0;
+ constraints.gridy = 4;
+ panel.add(sgpaLabel, constraints);
+ sgpaTextField = new JTextField(20);
+ constraints.gridx = 1;
+ constraints.gridy = 4;
+ panel.add(sgpaTextField, constraints);
+ categoryLabel = new JLabel("Category: ");
+ constraints.gridx = 0;
+ constraints.gridy = 5;
+ panel.add(categoryLabel, constraints);
+ categoryTextField = new JTextField(20);
+ constraints.gridx = 1;
+ constraints.gridy = 5;
+ panel.add(categoryTextField, constraints);
+ computeButton = new JButton("Compute");
+ constraints.gridx = 0;
+ constraints.gridy = 6;
+ panel.add(computeButton, constraints);
+ doneButton = new JButton("Done");
+ constraints.gridx = 1;
+ constraints.gridy = 6;
+ panel.add(doneButton, constraints);
+ displayButton = new JButton("Display");
+ constraints.gridx = 1;
+ constraints.gridy = 7;
+ panel.add(displayButton, constraints);
+ computeButton.addActionListener(this);
+ doneButton.addActionListener(this);
+ displayButton.addActionListener(this);
+ add(panel);
+ setVisible(true);
+ }
+ @Override
+ public void actionPerformed(ActionEvent e) {
+ if (e.getSource() == computeButton) {
+ //Calculate CGPA
+ double cgpa = 0.0;
+ String sgpaStr = sgpaTextField.getText().trim();
+ if (!sgpaStr.isEmpty()) {
+ String[] sgpaArray = sgpaStr.split(",");
+ double sum = 0.0;
+ for (int i = 0; i < sgpaArray.length; i++) {
+ try {
+ double sgpa = Double.parseDouble(sgpaArray[i].trim());
+ if (sgpa < 0 || sgpa > 10) {
+ JOptionPane.showMessageDialog(panel, "SGPA should be between 0 and 10",
+"Error", JOptionPane.ERROR_MESSAGE);
+ return;
+ }
+ sum += sgpa;
+ } catch (NumberFormatException ex) {
+ JOptionPane.showMessageDialog(panel, "SGPA should be a number", "Error",
+JOptionPane.ERROR_MESSAGE);
+ return;
+ }
+ }
+ cgpa = sum / sgpaArray.length;
+ }
+ JOptionPane.showMessageDialog(panel, "CGPA is: " + cgpa);
+ } else if (e.getSource() == doneButton) {
+ //Store student details in collection
+ String name = nameTextField.getText().trim();
+ String usn = usnTextField.getText().trim();
+ String ageStr = ageTextField.getText().trim();
+ String address = addressTextField.getText().trim();
+ String sgpa = sgpaTextField.getText().trim();
+ String category = categoryTextField.getText().trim();
+ if (name.isEmpty() || usn.isEmpty() || ageStr.isEmpty() || address.isEmpty() ||
+sgpa.isEmpty() || category.isEmpty()) {
+ JOptionPane.showMessageDialog(panel, "All fields are mandatory", "Error",
+JOptionPane.ERROR_MESSAGE);
+ return;
+ }
+ try {
+ int age = Integer.parseInt(ageStr);
+ if (age < 0 || age > 150) {
+ JOptionPane.showMessageDialog(panel, "Age should be between 0 and 150",
+"Error", JOptionPane.ERROR_MESSAGE);
+ return;
+ }
+ String studentInfo = name + "," + usn + "," + age + "," + address + "," + sgpa + ","
++ category;
+ studentList.add(studentInfo);
+ JOptionPane.showMessageDialog(panel, "Student details added to collection");
+ // clearFields();
+ } catch (NumberFormatException ex) {
+ JOptionPane.showMessageDialog(panel, "Age should be a number", "Error",
+JOptionPane.ERROR_MESSAGE);
+ }
+ } else if (e.getSource() == displayButton) {
+ //Display collection in text area
+ StringBuilder sb = new StringBuilder();
+ for (String studentInfo : studentList) {
+ sb.append(studentInfo).append("\n");
+ }
+ JTextArea textArea =new JTextArea(sb.toString());
+ JScrollPane scrollPane = new JScrollPane(textArea);
+ scrollPane.setPreferredSize(new Dimension(400, 400));
+ JOptionPane.showMessageDialog(panel, scrollPane);
+ }
+ }
+ private void clearFields() {
+ nameTextField.setText("");
+ usnTextField.setText("");
+ ageTextField.setText("");
+ addressTextField.setText("");
+ sgpaTextField.setText("");
+ categoryTextField.setText("");
+ }
+ public static void main(String[] args) {
+ new StudentInfo();
+ }
+}
